@@ -12,7 +12,8 @@ export const meta: V2_MetaFunction = () => {
 export default function Refresh() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>REFRESH Page Here</h1>
+      <h1>Refresh Page</h1>
+      <Link to="/">home</Link>{" "}
     </div>
   );
 }

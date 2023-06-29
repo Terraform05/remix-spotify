@@ -12,7 +12,8 @@ export const meta: V2_MetaFunction = () => {
 export default function Logout() {
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Log OUT Page Here</h1>
+      <h1>Logout Page</h1>
+      <Link to="/">home</Link>{" "}
     </div>
   );
 }

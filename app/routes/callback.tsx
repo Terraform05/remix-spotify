@@ -1,36 +1,34 @@
 //description: This is the callback page for the app. It will handle the callback from spotify and then redirect back to the app with the access token.
 // app/routes/auth.callback.tsx
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from '@remix-run/react';
 
 import { requestAccessToken } from '../spotifyAuthPKCE';
 
 export default function Callback() {
-  const [accessToken, setAccessToken] = useState('');
-  const [codeVerifier, setCodeVerifier] = useState('');
   const [code, setCode] = useState('');
+  const [codeVerifier, setCodeVerifier] = useState('');
+  const [accessToken, setAccessToken] = useState('');
 
   useEffect(() => {
-    const handleAccessToken = async () => {
-      const queryParams = new URLSearchParams(window.location.search);
-      const code = queryParams.get('code');
-      console.log('code: ', code)
-      const codeVerifier = window.localStorage.getItem('codeVerifier');
-      
-      if (codeVerifier === null) {
-        throw new Error('No codeVerifier found');
-      }
+    const queryParams = new URLSearchParams(window.location.search);
+    const code = queryParams.get('code');
+    const codeVerifier = window.localStorage.getItem('codeVerifier');
 
-      if (code !== null) {
-        setCode(code);
-        setCodeVerifier(codeVerifier);
-        const token = await requestAccessToken(code, codeVerifier);
-        setAccessToken(token);
-      }
-    };
-
-    handleAccessToken();
+    if (code && codeVerifier !== null) {
+      setCode(code);
+      setCodeVerifier(codeVerifier);
+      requestAccessToken(code, codeVerifier)
+        .then((accessToken) => {
+          window.localStorage.setItem('token', accessToken);
+          console.log('token:', accessToken);
+          setAccessToken(accessToken);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
   }, []);
 
   return (

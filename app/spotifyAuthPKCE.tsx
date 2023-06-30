@@ -11,6 +11,7 @@ export function generateRandomString(length: number): string {
     let randomString = Array.from(crypto.getRandomValues(new Uint32Array(length)))
         .map((value) => characters[value % characters.length])
         .join('');
+
     return randomString;
 }
 
@@ -27,12 +28,10 @@ export async function generateCodeChallenge(codeVerifier: string): Promise<strin
     return base64encode(digest);
 }
 
-export async function initiateAuthorization() {
-    const codeVerifier = generateRandomString(128);
+export async function initiateAuthorization(codeVerifier: string) {
     const codeChallenge = await generateCodeChallenge(codeVerifier);
     const state = generateRandomString(16);
     const scope = 'user-read-private user-read-email';
-    //localStorage.setItem('code_verifier', codeVerifier);
 
     const args = new URLSearchParams({
         client_id: client_id,
@@ -46,7 +45,32 @@ export async function initiateAuthorization() {
 
     const authorization_url = 'https://accounts.spotify.com/authorize?' + args;
     return authorization_url;
-    //const navigate = useNavigate();
-    //navigate(authorization_url);
 }
 
+export async function requestAccessToken(code: string, codeVerifier: string) {
+    const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: redirect_uri,
+        client_id: client_id,
+        code_verifier: codeVerifier,
+    });
+
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body.toString(),
+    });
+
+    console.log(response);
+
+    if (response.ok === false) {
+        throw new Error('HTTP status ' + response.status);
+    }
+
+    const data = await response.json();
+    return data.access_token;
+
+}

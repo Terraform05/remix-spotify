@@ -10,11 +10,10 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const codeVerifier = generateRandomString(128);
-
   window.localStorage.setItem('codeVerifier', codeVerifier);
+  console.log('codeVerifier1: ', codeVerifier)
 
   const [authorizationUrl, setAuthorizationUrl] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAuthorizationUrl = async () => {

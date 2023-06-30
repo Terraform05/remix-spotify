@@ -48,6 +48,7 @@ export async function initiateAuthorization(codeVerifier: string) {
 }
 
 export async function requestAccessToken(code: string, codeVerifier: string) {
+    
     const body = new URLSearchParams({
         grant_type: 'authorization_code',
         code: code,

@@ -15,14 +15,14 @@ export default function Callback() {
     const handleAccessToken = async () => {
       const queryParams = new URLSearchParams(window.location.search);
       const code = queryParams.get('code');
-
+      console.log('code: ', code)
       const codeVerifier = window.localStorage.getItem('codeVerifier');
-
+      
       if (codeVerifier === null) {
         throw new Error('No codeVerifier found');
       }
 
-      if (code && codeVerifier !== null) {
+      if (code !== null) {
         setCode(code);
         setCodeVerifier(codeVerifier);
         const token = await requestAccessToken(code, codeVerifier);

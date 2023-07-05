@@ -47,8 +47,8 @@ export async function initiateAuthorization(codeVerifier: string) {
     return authorization_url;
 }
 
-export async function requestAccessToken(code: string, codeVerifier: string) {
-    
+export async function requestTokens(code: string, codeVerifier: string) {
+
     const body = new URLSearchParams({
         grant_type: 'authorization_code',
         code: code,
@@ -72,6 +72,34 @@ export async function requestAccessToken(code: string, codeVerifier: string) {
     }
 
     const data = await response.json();
-    return data.access_token;
+    return { access_token: data.access_token, refresh_token: data.refresh_token };
 
+}
+
+export async function refreshTokens(refreshToken: string) {
+    const body = new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: client_id,
+    });
+
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: 'Basic ' + btoa(client_id + ':' + client_secret),
+        },
+        body: body.toString(),
+    });
+
+    if (response.ok === false) {
+        throw new Error('HTTP status ' + response.status);
+    }
+
+    const data = await response.json();
+    return { access_token: data.access_token, refresh_token: data.refresh_token };
+}
+
+export function checkValidTokenTime(token_time: string, current_time: string) {
+    return (parseInt(current_time) - parseInt(token_time)) < 3600000; //true if token is less than 1 hour old
 }

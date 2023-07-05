@@ -14,7 +14,7 @@ export const meta: V2_MetaFunction = () => {
   ];
 };
 
-function check_login() {
+export function check_login() {
   if (typeof window !== 'undefined') {
     const access_token = window.localStorage.getItem('access_token');
     const refresh_token = window.localStorage.getItem('refresh_token');

@@ -100,6 +100,6 @@ export async function refreshTokens(refreshToken: string) {
     return { access_token: data.access_token, refresh_token: data.refresh_token };
 }
 
-export function checkValidTokenTime(token_time: string, current_time: string) {
-    return (parseInt(current_time) - parseInt(token_time)) < 3600000; //true if token is less than 1 hour old
+export function is_valid_token_time(token_time: string, current_time: string) {
+    return (parseInt(current_time) - parseInt(token_time)) < 3590000; //true if token is less than 59 minutes old
 }

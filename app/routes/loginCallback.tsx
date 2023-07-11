@@ -6,7 +6,7 @@ import { Link } from '@remix-run/react';
 
 import { requestTokens } from '../spotifyAuthPKCE';
 
-export default function CheckLogin() {
+export default function loginCallback() {
   const [code, setCode] = useState('');
   const [codeVerifier, setCodeVerifier] = useState('');
   const [accessToken, setAccessToken] = useState('');

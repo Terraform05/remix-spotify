@@ -2,9 +2,6 @@
 // Path: app/spotifyAuthPKCE.tsx
 import { client_id, client_secret, redirect_uri } from './config_keys';
 
-import { useNavigate } from "react-router-dom";
-
-
 export function generateRandomString(length: number): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -100,6 +97,6 @@ export async function refreshTokens(refreshToken: string) {
     return { access_token: data.access_token, refresh_token: data.refresh_token };
 }
 
-export function is_valid_token_time(token_time: string, current_time: string) {
-    return (parseInt(current_time) - parseInt(token_time)) < 3590000; //true if token is less than 59 minutes old
+export function is_valid_token_time(token_time: any, current_time: any) { //any but should be date type
+    return (current_time - token_time) < 3590000; //true if token is less than 59 minutes old
 }

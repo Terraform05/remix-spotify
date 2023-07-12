@@ -73,9 +73,12 @@ export default function LoginCallback() {
     : "";
   const email = profileInfo?.email || "";
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
+    <div>
+      <div className="p-4 bg-blue-500">
+        <Link to="/example">EXAMPLE TAILWIND PAGE LINK</Link>
+      </div>
       <div>
-        <h1>You are LOGGED IN page</h1>
+        <h1>You are LOGGED IN</h1>
         <ul>
           <li>code: {code}</li>
           <li>codeVerifier: {codeVerifier}</li>

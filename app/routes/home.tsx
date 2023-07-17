@@ -72,6 +72,7 @@ export default function LoginCallback() {
     ? profileInfo.explicit_content
     : "";
   const email = profileInfo?.email || "";
+  
   return (
     <div>
       <div className="p-4 bg-blue-500">

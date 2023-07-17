@@ -2,9 +2,11 @@
 // app/routes/logout.tsx
 
 export default function Logout() {
-  window.localStorage.clear();
-  window.location.href = "/";
-
+  if (typeof window !== "undefined") {
+    window.localStorage.clear();
+    window.location.href = "/";
+  }
+  
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <h1>LOG OUT</h1>

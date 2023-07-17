@@ -57,7 +57,7 @@ export default function LoginCallback() {
           ); //logging
 
           //logged in, now redirect to home page
-          window.location.href = "/home";
+          window.location.href = "/example";
         }
       );
     } else {

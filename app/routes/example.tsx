@@ -7,13 +7,19 @@ import {
   useEffect,
   useState,
 } from "react";
+
 import { Disclosure, Menu, Transition } from "@headlessui/react";
+
 import {
   Bars3Icon,
   ExclamationCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+
 import { MeResponse } from "~/response_type";
+
+import { SectionCard } from "~/customContent/SectionCard";
+import { ChooseSong } from "~/customContent/ChooseSong";
 
 interface userProps {
   user: {
@@ -58,7 +64,12 @@ function Navigation({ user }: userProps) {
                 {/* DESKTOP MENU */}
                 <div className="flex h-16 items-center justify-between">
                   <div className="flex items-center">
-                    <a className="flex-shrink-0" href={user.spotify_profile_url} target="_blank" rel="noopener noreferrer">
+                    <a
+                      className="flex-shrink-0"
+                      href={user.spotify_profile_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <svg className="h-8 w-8" viewBox="0 0 168 168">
                         <path
                           fill="#1ED760"
@@ -271,23 +282,6 @@ const callouts = [
   },
 ];
 
-interface SectionCardProps {
-  children: React.ReactNode;
-}
-
-function SectionCard({ children }: SectionCardProps) {
-  return (
-    <>
-      <div className="mx-auto max-w-7xl py-6 justify-center items-center">
-        <div className="relative isolate overflow-hidden bg-gray-800 px-6 shadow-2xl sm:rounded-3xl">
-          {" "}
-          {children}
-        </div>
-      </div>
-    </>
-  );
-}
-
 function ThreeColumnCards({ user }: userProps) {
   return (
     <>
@@ -392,45 +386,6 @@ function RecommendedTopMusic() {
   );
 }
 
-function ChooseSong() {
-  return (
-    <>
-      <SectionCard>
-        <h2 className="text-2xl font-bold text-gray-100 text-center my-2 sm:my-4 md:my-5 lg:my-6">
-          Start With A Song You Love
-        </h2>
-        <div className="my-6 lg:grid lg:grid-cols-4 lg:gap-x-8 lg:space-y-0">
-          {RecommendedTopMusicCallouts.map((RecommendedTopMusicCallouts) => (
-            <div
-              key={RecommendedTopMusicCallouts.description}
-              className="group relative"
-            >
-              <div className="relative h-80 w-full overflow-hidden rounded-lg sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
-                <img
-                  src={RecommendedTopMusicCallouts.imageSrc}
-                  alt={RecommendedTopMusicCallouts.title}
-                  className="h-full w-full object-cover object-center"
-                />
-              </div>
-              <h3 className="mt-6">
-                <a href={RecommendedTopMusicCallouts.href}>
-                  <p className="text-base font-semibold text-gray-100 mr-2">
-                    {RecommendedTopMusicCallouts.title}
-                  </p>
-                  <p className="text-sm text-gray-300">
-                    {RecommendedTopMusicCallouts.description}
-                  </p>
-                </a>
-              </h3>
-            </div>
-          ))}
-        </div>
-        {/* </div>*/}
-      </SectionCard>
-    </>
-  );
-}
-
 export default function Example() {
   const [profileInfo, setProfileInfo] = useState<MeResponse | null>(null);
 
@@ -484,6 +439,7 @@ export default function Example() {
         <Navigation user={user} />
         <ThreeColumnCards user={user} />
         <RecommendedTopMusic />
+        <ChooseSong />
       </div>
     </>
   );

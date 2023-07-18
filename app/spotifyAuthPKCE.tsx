@@ -31,7 +31,7 @@ export async function generateCodeChallenge(
 export async function initiateAuthorization(codeVerifier: string) {
   const codeChallenge = await generateCodeChallenge(codeVerifier);
   const state = generateRandomString(16);
-  const scope = "user-read-private user-read-email";
+  const scope = "user-read-private user-read-email user-top-read";
 
   const args = new URLSearchParams({
     client_id: client_id,

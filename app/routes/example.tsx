@@ -20,6 +20,8 @@ import { MeResponse } from "~/response_type";
 
 import { SectionCard } from "~/customContent/SectionCard";
 import { ChooseSong } from "~/customContent/ChooseSong";
+import { ChooseArtist } from "~/customContent/ChooseArtist";
+import { ChoosePlaylist } from "~/customContent/ChoosePlaylist";
 
 interface userProps {
   user: {
@@ -35,12 +37,12 @@ interface userProps {
 }
 
 const navigation = [
-  { name: "Home", href: "#", current: true },
-  { name: "Recommended", href: "#", current: false },
-  { name: "Songs", href: "#", current: false },
-  { name: "Artists", href: "#", current: false },
-  { name: "Playlists", href: "#", current: false },
-  { name: "Genres", href: "#", current: false },
+  { name: "Home", href: "", current: true },
+  { name: "Recommended", href: "#recommended", current: false },
+  { name: "Songs", href: "#songs", current: false },
+  { name: "Artists", href: "#artists", current: false },
+  { name: "Playlists", href: "#playlists", current: false },
+  { name: "Genres", href: "#genres", current: false },
 ];
 
 const userNavigation = [
@@ -203,7 +205,7 @@ function Navigation({ user }: userProps) {
                 </div>
                 <div className="border-t border-black pb-3 pt-4">
                   <div className="flex items-center px-5">
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0">``
                       <img
                         className="h-10 w-10 rounded-full"
                         src={user.image.url}
@@ -257,35 +259,35 @@ const callouts = [
     title: "Song",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/home-page-02-edition-01.jpg",
-    href: "#",
+    href: "#songs",
   },
   {
     description: "Pick one and start swiping.",
     title: "Artist",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/home-page-02-edition-02.jpg",
-    href: "#",
+    href: "#artists",
   },
   {
     description: "Pick one and start swiping.",
     title: "Playlist",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/home-page-02-edition-03.jpg",
-    href: "#",
+    href: "#playlists",
   },
   {
     description: "Pick one and start swiping.",
     title: "Genre",
     imageSrc:
       "https://tailwindui.com/img/ecommerce-images/home-page-02-edition-01.jpg",
-    href: "#",
+    href: "#genres",
   },
 ];
 
-function ThreeColumnCards({ user }: userProps) {
+function Welcome({ user }: userProps) {
   return (
     <>
-      <SectionCard>
+      <SectionCard id={"welcome"}>
         <h2 className="text-2xl font-bold text-gray-100 text-center my-2 sm:my-4 md:my-5 lg:my-6">
           Welcome {user.name}!
         </h2>
@@ -351,7 +353,7 @@ const RecommendedTopMusicCallouts = [
 function RecommendedTopMusic() {
   return (
     <>
-      <SectionCard>
+      <SectionCard id={"recommended"}>
         <h2 className="text-2xl font-bold text-gray-100 text-center my-2 sm:my-4 md:my-5 lg:my-6">
           Top Recommended Music For You
         </h2>
@@ -435,11 +437,13 @@ export default function Example() {
 
   return (
     <>
-      <div className="bg-black">
-        <Navigation user={user} />
-        <ThreeColumnCards user={user} />
+      <div className="bg-black" id="">
+        <Navigation user={user}/>
+        <Welcome user={user} />
         <RecommendedTopMusic />
         <ChooseSong />
+        <ChooseArtist />
+        <ChoosePlaylist/>
       </div>
     </>
   );

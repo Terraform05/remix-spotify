@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, ReactNode } from "react";
 import { SectionCard } from "~/customContent/SectionCard";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 const CircularProgressBar = ({ progress }: { progress: number }) => {
   return (
@@ -17,6 +18,7 @@ const CircularProgressBar = ({ progress }: { progress: number }) => {
 };
 
 interface Track {
+  id: string;
   name: ReactNode;
   album: {
     artists: {
@@ -65,6 +67,36 @@ export function ChooseSong() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [selectedSongs, setSelectedSongs] = useState<string[]>([]);
+  const [selectedValue, setSelectedValue] = useState<number>(15);
+
+  useEffect(() => {
+    // Listen for page visibility changes
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      // Clean up the event listener when the component unmounts
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+      // Pause the audio when the component unmounts
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+        audioRef.current.removeEventListener("timeupdate", updateTime);
+        setCurrentPlaybackTime(0);
+      }
+    };
+  }, []);
+
+  const handleVisibilityChange = () => {
+    // Pause the audio when the page becomes hidden
+    if (document.hidden && audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+      audioRef.current.removeEventListener("timeupdate", updateTime);
+      setCurrentPlaybackTime(0);
+    }
+  };
 
   useEffect(() => {
     const storedCode = window.localStorage.getItem("code");
@@ -75,7 +107,7 @@ export function ChooseSong() {
     const fetchTopTracks = async () => {
       try {
         const response = await fetch(
-          "https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=15",
+          `https://api.spotify.com/v1/me/top/tracks?time_range=medium_term&limit=${selectedValue}`,
           {
             headers: {
               Authorization: `Bearer ${storedAccessToken}`,
@@ -100,18 +132,28 @@ export function ChooseSong() {
     if (storedAccessToken) {
       fetchTopTracks();
     }
-  }, []);
+  }, [selectedValue]);
+
+  let hoverTimeout: NodeJS.Timeout;
 
   const handleHover = (trackUrl: string) => {
-    if (audioRef.current) {
-      audioRef.current.src = trackUrl;
-      audioRef.current.play();
-      setIsPlaying(true);
-      audioRef.current.addEventListener("timeupdate", updateTime);
-    }
+    hoverTimeout = setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.src = trackUrl;
+        const trackId = topTracks.find(
+          (track) => track.preview_url === trackUrl
+        )?.id;
+        if (trackId && !selectedSongs.includes(trackId)) {
+          audioRef.current.play();
+          setIsPlaying(true);
+        }
+        audioRef.current.addEventListener("timeupdate", updateTime);
+      }
+    }, 1000);
   };
 
   const handleMouseLeave = () => {
+    clearTimeout(hoverTimeout);
     if (audioRef.current) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -130,48 +172,85 @@ export function ChooseSong() {
     ? (currentPlaybackTime / (audioRef.current?.duration || 1)) * 100
     : 0;
 
-  return (
-    <>
-      <SectionCard id="songs">
-        <h2 className="text-2xl font-bold text-gray-100 text-center my-2 sm:my-4 md:my-5 lg:my-6">
-          Start With A Song You Know
-        </h2>
-        <div className="my-6 lg:grid lg:grid-cols-5 lg:gap-x-8 lg:space-y-0">
-          {topTracks.map((track) => (
-            <a href={track.album.external_urls.spotify}>
-              <div
-                key={track.album.id}
-                className="group relative"
-                onMouseEnter={() => handleHover(track.preview_url)}
-                onMouseLeave={() => handleMouseLeave()}
-              >
-                <div className="relative sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1">
-                  <img
-                    src={track.album.images[0].url}
-                    alt={track.album.name}
-                    className="h-full w-full rounded-lg object-cover object-center group-hover:opacity-50"
-                  />
-                  {/* Circular progress bar (pie chart) */}
-                  {audioRef.current &&
-                    audioRef.current.src === track.preview_url && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <CircularProgressBar progress={songPercentage} />
-                      </div>
-                    )}
-                </div>
+  const handleSongClick = (trackId: string) => {
+    if (selectedSongs.includes(trackId)) {
+      setSelectedSongs((prevSelected) =>
+        prevSelected.filter((selectedTrack) => selectedTrack !== trackId)
+      );
+    } else {
+      setSelectedSongs((prevSelected) => [...prevSelected, trackId]);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+        audioRef.current.removeEventListener("timeupdate", updateTime);
+        setCurrentPlaybackTime(0);
+      }
+    }
+  };
 
-                <h3 className="my-2">
-                  <p className="text-xs font-semibold text-gray-100 mr-2">
-                    {track.name}
-                  </p>
-                  <p className="text-xs text-gray-300">
-                    {track.artists
-                      .map((artist) => artist.name)
-                      .join(", ")}
-                  </p>
-                </h3>
+  const handleSliderValueChange = (value: number) => {
+    setSelectedValue(value);
+  };
+
+  return (
+    <div className="select-none">
+      <SectionCard
+        id="songs"
+        title="Start With A Song You Know"
+        selectedValue={selectedValue}
+        onSliderValueChange={handleSliderValueChange}
+      >
+        {/* DISPLAYING SELECTED FOR TESTING */}
+        <ul>
+          {selectedSongs.map((trackId) => (
+            <li key={trackId}>
+              <p className="text-xs text-gray-100">ID: {trackId}</p>
+            </li>
+          ))}
+        </ul>
+        {/* DISPLAYING SELECTED FOR TESTING */}
+
+        <div className="my-6 lg:grid lg:grid-cols-5 lg:gap-x-8 lg:space-y-0 cursor-pointer">
+          {topTracks.map((track) => (
+            <div
+              key={track.album.id}
+              className={`group relative ${
+                selectedSongs.includes(track.id) ? "opacity-25" : ""
+              }`}
+              onMouseEnter={() => handleHover(track.preview_url)}
+              onMouseLeave={() => handleMouseLeave()}
+              onClick={() => handleSongClick(track.id)}
+            >
+              <div className="relative sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1">
+                <img
+                  src={track.album.images[0].url}
+                  alt={track.album.name}
+                  className="h-full w-full rounded-lg object-cover object-center group-hover:opacity-50"
+                />
+                {/* Circular progress bar (pie chart) */}
+                {audioRef.current &&
+                  audioRef.current.src === track.preview_url && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <CircularProgressBar progress={songPercentage} />
+                    </div>
+                  )}
+                {/* Circle Check icon for selected songs */}
+                {selectedSongs.includes(track.id) && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <CheckCircleIcon className="w-12 h-12 text-white" />
+                  </div>
+                )}
               </div>
-            </a>
+
+              <h3 className="my-2">
+                <p className="text-xs font-semibold text-gray-100 mr-2">
+                  {track.name}
+                </p>
+                <p className="text-xs text-gray-300">
+                  {track.artists.map((artist) => artist.name).join(", ")}
+                </p>
+              </h3>
+            </div>
           ))}
         </div>
       </SectionCard>
@@ -185,6 +264,6 @@ export function ChooseSong() {
           />
         ))}
       </audio>
-    </>
+    </div>
   );
 }

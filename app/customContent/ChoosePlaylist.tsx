@@ -111,7 +111,7 @@ export function ChoosePlaylist() {
         </ul>
         {/* DISPLAYING SELECTED FOR TESTING */}
 
-        <div className="my-6 lg:grid lg:grid-cols-5 lg:gap-x-8 lg:space-y-0 cursor-pointer">
+        <div className="my-6 grid grid-cols-5 gap-x-8 space-y-0 cursor-pointer">
           {playlists.map((playlist) => (
             <div
               key={playlist.id}

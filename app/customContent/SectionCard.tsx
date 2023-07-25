@@ -19,7 +19,7 @@ export function SectionCard({
     <div className="mx-auto max-w-7xl py-6 justify-center items-center" id={id}>
       <div className="relative isolate overflow-hidden bg-gray-800 px-6 shadow-2xl sm:rounded-3xl">
         {title && (
-          <h2 className="text-2xl font-bold text-gray-100 text-center my-2 sm:my-4 md:my-5 lg:my-6">
+          <h2 className="text-2xl font-bold text-gray-100 text-center my-2 sm:my-4 md:my-4 lg:my-5">
             {title}
           </h2>
         )}
